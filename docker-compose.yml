@@ -1,0 +1,75 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: champions_league_app
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
+    environment:
+      - VITE_PORT=5173
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - champions_league
+
+  nginx:
+    image: nginx:alpine
+    container_name: champions_league_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - champions_league
+
+  db:
+    image: mysql:8.0
+    container_name: champions_league_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: champions_league
+      MYSQL_USER: sail
+      MYSQL_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - champions_league
+
+  node:
+    image: node:20-alpine
+    container_name: champions_league_node
+    working_dir: /var/www/html
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/node_modules
+    environment:
+      - VITE_HOST=0.0.0.0
+    command: sh -c "npm install && npm run dev"
+    depends_on:
+      - app
+    networks:
+      - champions_league
+
+volumes:
+  db_data:
+
+networks:
+  champions_league:
+    driver: bridge
