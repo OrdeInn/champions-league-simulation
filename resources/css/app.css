@@ -4,8 +4,165 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../**/*.vue';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Oswald', var(--font-sans);
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    --color-bg-primary: #0a0e1a;
+    --color-bg-secondary: #111827;
+    --color-bg-tertiary: #1a2236;
+    --color-accent-primary: #00e5ff;
+    --color-accent-gold: #ffd700;
+    --color-accent-green: #22c55e;
+    --color-accent-red: #ef4444;
+    --color-accent-amber: #f59e0b;
+    --color-text-primary: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-text-muted: #475569;
+    --color-border: #1e293b;
+}
+
+:root {
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #111827;
+    --bg-tertiary: #1a2236;
+    --accent-primary: #00e5ff;
+    --accent-gold: #ffd700;
+    --accent-green: #22c55e;
+    --accent-red: #ef4444;
+    --accent-amber: #f59e0b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+    --border: #1e293b;
+    --glow: rgba(0, 229, 255, 0.15);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    background:
+        radial-gradient(circle at 18% 22%, rgba(30, 58, 138, 0.25), transparent 34%),
+        radial-gradient(circle at 82% 8%, rgba(56, 189, 248, 0.12), transparent 28%),
+        radial-gradient(ellipse at 20% 50%, #0f172a 0%, #0a0e1a 100%);
+    background-attachment: fixed;
+    text-rendering: optimizeLegibility;
+}
+
+.app-shell {
+    position: relative;
+    isolation: isolate;
+}
+
+.app-shell::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.18;
+    background-image:
+        linear-gradient(to right, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+    background-size: 140px 140px;
+    mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+    z-index: -1;
+}
+
+.starfield {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+    opacity: 0.16;
+    background-image:
+        radial-gradient(circle at 20% 35%, rgba(255, 255, 255, 0.7) 1px, transparent 1.5px),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.6) 1px, transparent 1.5px),
+        radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.55) 1px, transparent 1.5px),
+        radial-gradient(circle at 35% 80%, rgba(255, 255, 255, 0.4) 1px, transparent 1.5px);
+    background-size: 260px 260px, 300px 300px, 340px 340px, 420px 420px;
+    animation: star-drift 36s linear infinite;
+}
+
+.app-header {
+    box-shadow: 0 1px 0 rgba(30, 41, 59, 0.8), 0 6px 22px rgba(0, 0, 0, 0.28), 0 0 22px var(--glow);
+}
+
+.font-display {
+    font-family: var(--font-display);
+}
+
+.font-mono-broadcast {
+    font-family: var(--font-mono);
+}
+
+.card-surface {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .fade-slide-enter-active {
+        transition: opacity 300ms ease, transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .fade-slide-leave-active {
+        transition: opacity 200ms ease;
+    }
+
+    .fade-slide-enter-from,
+    .fade-slide-leave-to {
+        opacity: 0;
+    }
+
+    .fade-slide-enter-from {
+        transform: translate3d(0, 14px, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .starfield {
+        animation: none;
+    }
+
+    .fade-slide-enter-active,
+    .fade-slide-leave-active {
+        transition: opacity 80ms linear;
+    }
+
+    .fade-slide-enter-from,
+    .fade-slide-leave-to {
+        opacity: 0;
+        transform: none;
+    }
+}
+
+@keyframes star-drift {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
 }
