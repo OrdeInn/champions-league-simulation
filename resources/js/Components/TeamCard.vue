@@ -1,5 +1,6 @@
 <template>
   <article
+    data-testid="team-card"
     class="team-card card-surface p-5"
     :style="{ '--stagger-delay': `${index * 100}ms` }"
   >
@@ -19,7 +20,7 @@
       </div>
 
       <div class="h-3 overflow-hidden rounded-full border border-[var(--border)] bg-[color:rgba(26,34,54,0.65)]">
-        <div class="power-fill h-full" :style="powerStyle"></div>
+        <div data-testid="team-power-fill" class="power-fill h-full" :style="powerStyle"></div>
       </div>
     </div>
   </article>

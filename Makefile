@@ -1,4 +1,4 @@
-.PHONY: up down build shell migrate seed fresh test install logs
+.PHONY: up down build shell migrate seed fresh test install logs test-frontend test-e2e
 
 up:
 	docker compose up -d
@@ -37,3 +37,9 @@ install:
 
 logs:
 	docker compose logs -f
+
+test-frontend:
+	npm run test:frontend
+
+test-e2e:
+	npx playwright test

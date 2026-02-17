@@ -4,15 +4,25 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "test:frontend": "vitest run",
+        "test:frontend:watch": "vitest",
+        "test:frontend:coverage": "vitest run --coverage",
+        "test:e2e": "playwright test"
     },
     "devDependencies": {
+        "@playwright/test": "^1.58.2",
         "@tailwindcss/vite": "^4.0.0",
+        "@vitest/coverage-v8": "^4.0.18",
+        "@vue/test-utils": "^2.4.6",
         "axios": "^1.11.0",
         "concurrently": "^9.0.1",
+        "jsdom": "^28.1.0",
         "laravel-vite-plugin": "^2.1.0",
+        "playwright": "^1.58.2",
         "tailwindcss": "^4.1.18",
-        "vite": "^7.3.1"
+        "vite": "^7.3.1",
+        "vitest": "^4.0.18"
     },
     "dependencies": {
         "@inertiajs/vue3": "^2.3.15",

@@ -1,0 +1,57 @@
+import { mount } from '@vue/test-utils'
+import { describe, expect, it } from 'vitest'
+import WeeklyMatches from '../../../resources/js/Components/WeeklyMatches.vue'
+
+const fixtures = [
+  {
+    week: 1,
+    matches: [
+      { id: 1, is_played: true, home_score: 2, away_score: 1, home_team: { name: 'Real Madrid' }, away_team: { name: 'Liverpool' } },
+      { id: 2, is_played: false, home_score: null, away_score: null, home_team: { name: 'Bayern' }, away_team: { name: 'Galatasaray' } },
+    ],
+  },
+  {
+    week: 2,
+    matches: [
+      { id: 3, is_played: false, home_score: null, away_score: null, home_team: { name: 'Real Madrid' }, away_team: { name: 'Bayern' } },
+      { id: 4, is_played: false, home_score: null, away_score: null, home_team: { name: 'Liverpool' }, away_team: { name: 'Galatasaray' } },
+    ],
+  },
+]
+
+describe('WeeklyMatches', () => {
+  it('renders matches for selected week', () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+    expect(wrapper.text()).toContain('Real Madrid')
+    expect(wrapper.text()).toContain('Liverpool')
+  })
+
+  it('shows vs for unplayed matches', () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+    expect(wrapper.text()).toContain('vs')
+  })
+
+  it('emits selectedWeek on arrow click', async () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+    await wrapper.get('[data-testid="week-next"]').trigger('click')
+
+    expect(wrapper.emitted('update:selectedWeek')?.[0]).toEqual([2])
+  })
+
+  it('emits editMatch when played match clicked', async () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+    await wrapper.get('[data-testid="played-match-1"]').trigger('click')
+
+    expect(wrapper.emitted('editMatch')).toBeTruthy()
+  })
+
+  it('disables previous arrow on week 1', () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+    expect(wrapper.get('[data-testid="week-prev"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('disables next arrow on last week', () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 2 } })
+    expect(wrapper.get('[data-testid="week-next"]').attributes('disabled')).toBeDefined()
+  })
+})

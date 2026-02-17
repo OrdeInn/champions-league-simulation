@@ -1,5 +1,5 @@
 <template>
-  <article class="week-card card-surface p-4" :style="{ '--week-delay': `${index * 150}ms` }">
+  <article data-testid="week-card" class="week-card card-surface p-4" :style="{ '--week-delay': `${index * 150}ms` }">
     <header class="mb-3 pb-2">
       <h3 class="font-display text-2xl uppercase tracking-[0.08em] text-[var(--accent-primary)]">
         Week {{ fixture.week }}

@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-8">
+  <section class="space-y-8" data-testid="fixtures-page">
     <header class="space-y-3">
       <p class="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-tertiary)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent-gold)]">
         <span aria-hidden="true">🏆</span>
@@ -27,6 +27,7 @@
 
     <button
       type="button"
+      data-testid="start-simulation-button"
       class="start-button w-full rounded-xl px-5 py-4 font-display text-lg uppercase tracking-[0.14em] text-[#001018] disabled:cursor-not-allowed disabled:opacity-70"
       :disabled="isNavigating"
       @click="startSimulation"

@@ -1,5 +1,5 @@
 <template>
-  <div class="match-pairing flex items-center gap-3 rounded-lg border border-[var(--border)] bg-[linear-gradient(90deg,rgba(0,229,255,0.06)_0%,rgba(255,215,0,0.06)_100%)] px-3 py-2" :style="{ '--pair-delay': `${animationDelay}ms` }">
+  <div data-testid="match-pairing" class="match-pairing flex items-center gap-3 rounded-lg border border-[var(--border)] bg-[linear-gradient(90deg,rgba(0,229,255,0.06)_0%,rgba(255,215,0,0.06)_100%)] px-3 py-2" :style="{ '--pair-delay': `${animationDelay}ms` }">
     <span class="min-w-0 flex-1 truncate font-display text-base uppercase tracking-[0.04em] text-[var(--text-primary)]" :title="match.home_team?.name || match.homeTeam?.name">
       {{ match.home_team?.name || match.homeTeam?.name }}
     </span>
