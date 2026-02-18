@@ -53,6 +53,10 @@ body,
     min-height: 100%;
 }
 
+html {
+    background-color: var(--bg-primary);
+}
+
 body {
     margin: 0;
     font-family: var(--font-sans);
