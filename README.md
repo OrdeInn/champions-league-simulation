@@ -1,59 +1,129 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Champions League Simulation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A football league simulation app built with Laravel, Vue.js, and Inertia.js. Simulate a round-robin group stage with four teams, track standings, view match results week by week, and get championship predictions.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Tournament Teams** — View the four competing teams and generate fixtures
+- **Fixtures** — Round-robin schedule generated automatically
+- **Simulation** — Play matches week by week or all at once
+- **League Table** — Live standings with points, wins, draws, losses, and goal difference
+- **Championship Predictions** — Probability estimates based on current standings and remaining matches
+- **Editable Results** — Modify match scores and recalculate standings
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Layer | Technology |
+|---|---|
+| Backend | PHP 8.2+, Laravel 12 |
+| Frontend | Vue 3, Inertia.js, Tailwind CSS |
+| Database | MySQL 8.0 |
+| Build | Vite |
+| Testing | PHPUnit, Vitest, Playwright |
+| Infrastructure | Docker, Nginx |
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Prerequisites
 
-## Laravel Sponsors
+- [Docker](https://www.docker.com/get-started) and Docker Compose
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+That's it. No local PHP, Node, or database installation required.
 
-### Premium Partners
+### Quick Start
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+# 1. Clone the repository
+git clone <repo-url>
+cd champions-league-simulation
 
-## Contributing
+# 2. Copy environment file
+cp .env.example .env
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# 3. Build and start all containers, install dependencies, run migrations and seeders
+make install
 
-## Code of Conduct
+# 4. Open the app
+open http://localhost:8080
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+The `make install` command handles everything: building Docker images, waiting for the database to be ready, installing Composer and npm dependencies, and running migrations with seed data.
 
-## Security Vulnerabilities
+### Environment Variables
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The `.env.example` file contains sensible defaults that work with the Docker setup out of the box. The key values are:
+
+```env
+APP_URL=http://localhost:8080
+
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=champions_league
+DB_USERNAME=sail
+DB_PASSWORD=password
+```
+
+---
+
+## Usage
+
+### Docker Commands
+
+```bash
+make up          # Start all containers
+make down        # Stop all containers
+make build       # Rebuild containers from scratch (no cache)
+make shell       # Open a bash shell inside the app container
+make logs        # Tail logs from all containers
+```
+
+### Database
+
+```bash
+make migrate     # Run pending migrations
+make seed        # Run seeders
+make fresh       # Drop all tables, re-migrate, and re-seed
+```
+
+### Running Tests
+
+```bash
+# Backend (PHPUnit)
+make test
+
+# Frontend unit tests (Vitest)
+make test-frontend
+
+# End-to-end tests (Playwright)
+make test-e2e
+```
+
+---
+
+## Project Structure
+
+```
+.
+├── app/
+│   ├── Http/Controllers/   # Inertia controllers
+│   ├── Models/             # Eloquent models (Team, Fixture, Match, etc.)
+│   └── Services/           # Simulation & prediction logic
+├── resources/
+│   └── js/
+│       ├── Pages/          # Vue page components
+│       └── Components/     # Shared UI components
+├── tests/
+│   ├── Unit/               # PHPUnit unit tests
+│   ├── Feature/            # PHPUnit feature/integration tests
+│   └── e2e/                # Playwright end-to-end tests
+├── docker/                 # Nginx config and Docker assets
+├── docker-compose.yml
+├── Dockerfile
+└── Makefile
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
