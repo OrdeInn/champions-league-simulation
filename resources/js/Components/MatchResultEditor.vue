@@ -13,13 +13,21 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="mb-1 block text-xs uppercase tracking-[0.1em] text-[var(--text-secondary)]" for="home-score">Home</label>
-            <input id="home-score" data-testid="home-score-input" v-model.number="form.home_score" type="number" min="0" max="20" class="w-full rounded-md border border-[var(--border)] bg-[var(--bg-tertiary)] px-3 py-2 text-center font-mono-broadcast text-lg text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none" />
+            <div class="flex items-center overflow-hidden rounded-md border border-[var(--border)] bg-[var(--bg-tertiary)] focus-within:border-[var(--accent-primary)]">
+              <button type="button" :disabled="form.home_score <= 0" class="stepper-btn" @click="decrement('home_score')">−</button>
+              <input id="home-score" data-testid="home-score-input" v-model.number="form.home_score" type="number" min="0" max="20" class="score-input w-full bg-transparent py-2 text-center font-mono-broadcast text-lg text-[var(--text-primary)] focus:outline-none" />
+              <button type="button" :disabled="form.home_score >= 20" class="stepper-btn" @click="increment('home_score')">+</button>
+            </div>
             <p v-if="form.errors.home_score" class="mt-1 text-xs text-[var(--accent-red)]">{{ form.errors.home_score }}</p>
           </div>
 
           <div>
             <label class="mb-1 block text-xs uppercase tracking-[0.1em] text-[var(--text-secondary)]" for="away-score">Away</label>
-            <input id="away-score" data-testid="away-score-input" v-model.number="form.away_score" type="number" min="0" max="20" class="w-full rounded-md border border-[var(--border)] bg-[var(--bg-tertiary)] px-3 py-2 text-center font-mono-broadcast text-lg text-[var(--text-primary)] focus:border-[var(--accent-primary)] focus:outline-none" />
+            <div class="flex items-center overflow-hidden rounded-md border border-[var(--border)] bg-[var(--bg-tertiary)] focus-within:border-[var(--accent-primary)]">
+              <button type="button" :disabled="form.away_score <= 0" class="stepper-btn" @click="decrement('away_score')">−</button>
+              <input id="away-score" data-testid="away-score-input" v-model.number="form.away_score" type="number" min="0" max="20" class="score-input w-full bg-transparent py-2 text-center font-mono-broadcast text-lg text-[var(--text-primary)] focus:outline-none" />
+              <button type="button" :disabled="form.away_score >= 20" class="stepper-btn" @click="increment('away_score')">+</button>
+            </div>
             <p v-if="form.errors.away_score" class="mt-1 text-xs text-[var(--accent-red)]">{{ form.errors.away_score }}</p>
           </div>
         </div>
@@ -80,6 +88,14 @@ const teamName = side => {
   return props.match.away_team?.name || props.match.awayTeam?.name || 'Away'
 }
 
+const increment = field => {
+  if (form[field] < 20) form[field]++
+}
+
+const decrement = field => {
+  if (form[field] > 0) form[field]--
+}
+
 const close = () => {
   if (form.processing) {
     return
@@ -102,3 +118,38 @@ const submit = () => {
   })
 }
 </script>
+
+<style scoped>
+.score-input::-webkit-inner-spin-button,
+.score-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.score-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.stepper-btn {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  width: 2.25rem;
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.stepper-btn:hover:not(:disabled) {
+  background-color: var(--bg-secondary);
+  color: var(--accent-primary);
+}
+
+.stepper-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+</style>
