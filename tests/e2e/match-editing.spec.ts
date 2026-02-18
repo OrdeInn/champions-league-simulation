@@ -14,7 +14,9 @@ test('match result editing flow', async ({ page }) => {
   const playedMatch = page.locator('[data-testid^="played-match-"]').first()
   const playedMatchTestId = await playedMatch.getAttribute('data-testid')
   expect(playedMatchTestId).toBeTruthy()
-  await playedMatch.click()
+  const matchId = playedMatchTestId?.replace('played-match-', '')
+  expect(matchId).toBeTruthy()
+  await page.getByTestId(`edit-match-${matchId}`).click()
 
   await expect(page.getByTestId('match-result-editor')).toBeVisible()
   await page.getByTestId('home-score-input').fill('9')
