@@ -16,8 +16,12 @@ test('reset functionality flow', async ({ page }) => {
   await page.waitForLoadState('networkidle')
   await expect(page.getByRole('heading', { name: 'Week 3 of 6' })).toBeVisible()
 
-  page.once('dialog', dialog => dialog.accept())
   await page.getByTestId('reset-button').click()
+  await expect(page.getByTestId('confirm-dialog-confirm')).toBeVisible()
+  const dialog = page.getByRole('alertdialog', { name: 'Reset Simulation' })
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByText('This will clear all match results, standings, and predictions. Are you sure?')).toBeVisible()
+  await page.getByTestId('confirm-dialog-confirm').click()
   await page.waitForLoadState('networkidle')
   await expect(page).toHaveURL(/\/$/)
   await expect(page.getByTestId('teams-page')).toBeVisible()

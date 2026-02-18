@@ -32,11 +32,22 @@
       <span v-if="isResetting">Resetting...</span>
       <span v-else>Reset</span>
     </button>
+
+    <ConfirmDialog
+      :visible="showConfirmDialog"
+      title="Reset Simulation"
+      message="This will clear all match results, standings, and predictions. Are you sure?"
+      confirm-label="Reset All"
+      variant="destructive"
+      @confirm="onConfirmReset"
+      @cancel="onCancelReset"
+    />
   </section>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import ConfirmDialog from './ConfirmDialog.vue'
 
 const props = defineProps({
   allWeeksPlayed: {
@@ -62,14 +73,23 @@ const emit = defineEmits(['playWeek', 'playAll', 'reset'])
 const nextWeek = computed(() => Math.min(6, props.currentWeek + 1))
 const isBusy = computed(() => props.isPlaying || props.isResetting)
 
+const showConfirmDialog = ref(false)
+
 const confirmReset = () => {
-  if (isBusy.value) {
+  if (isBusy.value || showConfirmDialog.value) {
     return
   }
 
-  if (window.confirm('This will delete all fixtures and matches. Continue?')) {
-    emit('reset')
-  }
+  showConfirmDialog.value = true
+}
+
+const onConfirmReset = () => {
+  showConfirmDialog.value = false
+  emit('reset')
+}
+
+const onCancelReset = () => {
+  showConfirmDialog.value = false
 }
 </script>
 

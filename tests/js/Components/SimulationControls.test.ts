@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import SimulationControls from '../../../resources/js/Components/SimulationControls.vue'
 
 describe('SimulationControls', () => {
@@ -9,6 +9,22 @@ describe('SimulationControls', () => {
     isPlaying: false,
     isResetting: false,
   }
+
+  const mountedWrappers: ReturnType<typeof mount>[] = []
+
+  const mountWithTeleport = (props = baseProps) => {
+    const wrapper = mount(SimulationControls, {
+      props,
+      global: { stubs: { teleport: true } },
+    })
+    mountedWrappers.push(wrapper)
+    return wrapper
+  }
+
+  afterEach(() => {
+    mountedWrappers.forEach(w => w.unmount())
+    mountedWrappers.length = 0
+  })
 
   it('renders three buttons', () => {
     const wrapper = mount(SimulationControls, { props: baseProps })
@@ -29,12 +45,24 @@ describe('SimulationControls', () => {
     expect(wrapper.emitted('playAll')).toBeTruthy()
   })
 
-  it('emits reset on click after confirmation', async () => {
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
-    const wrapper = mount(SimulationControls, { props: baseProps })
+  it('shows confirm dialog on reset click', async () => {
+    const wrapper = mountWithTeleport()
     await wrapper.get('[data-testid="reset-button"]').trigger('click')
-    expect(confirmSpy).toHaveBeenCalledWith('This will delete all fixtures and matches. Continue?')
+    expect(wrapper.find('[data-testid="confirm-dialog-confirm"]').exists()).toBe(true)
+  })
+
+  it('emits reset on click after confirmation', async () => {
+    const wrapper = mountWithTeleport()
+    await wrapper.get('[data-testid="reset-button"]').trigger('click')
+    await wrapper.get('[data-testid="confirm-dialog-confirm"]').trigger('click')
     expect(wrapper.emitted('reset')).toBeTruthy()
+  })
+
+  it('does not emit reset when dialog is cancelled', async () => {
+    const wrapper = mountWithTeleport()
+    await wrapper.get('[data-testid="reset-button"]').trigger('click')
+    await wrapper.get('[data-testid="confirm-dialog-cancel"]').trigger('click')
+    expect(wrapper.emitted('reset')).toBeFalsy()
   })
 
   it('disables play buttons when allWeeksPlayed', () => {
