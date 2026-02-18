@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, watch } from 'vue'
+import { computed, onBeforeUnmount, reactive, watch } from 'vue'
 
 const props = defineProps({
   fixtures: {
@@ -91,6 +91,7 @@ const props = defineProps({
 const emit = defineEmits(['update:selectedWeek', 'editMatch'])
 
 const animatedScores = reactive({})
+const activeTimers = Object.create(null)
 const prefersReducedMotion = typeof window !== 'undefined'
   && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -127,6 +128,7 @@ const animateScoreTo = (key, target) => {
     return
   }
 
+  clearInterval(activeTimers[key])
   animatedScores[key] = 0
 
   if (safeTarget === 0) {
@@ -145,12 +147,15 @@ const animateScoreTo = (key, target) => {
     if (currentStep >= steps) {
       animatedScores[key] = safeTarget
       clearInterval(timer)
+      delete activeTimers[key]
     }
   }, tick)
+
+  activeTimers[key] = timer
 }
 
 watch(
-  () => [props.selectedWeek, props.fixtures],
+  () => props.fixtures,
   () => {
     weekMatches.value.forEach(match => {
       if (!match.is_played) {
@@ -161,12 +166,25 @@ watch(
       animateScoreTo(scoreKey(match.id, 'away'), match.away_score)
     })
   },
-  { immediate: true, deep: true }
+  { deep: true }
 )
 
 const animatedScore = (match, side) => {
-  return animatedScores[scoreKey(match.id, side)] ?? 0
+  const key = scoreKey(match.id, side)
+  if (Object.prototype.hasOwnProperty.call(animatedScores, key)) {
+    return animatedScores[key]
+  }
+
+  if (side === 'home') {
+    return match.home_score ?? 0
+  }
+
+  return match.away_score ?? 0
 }
+
+onBeforeUnmount(() => {
+  Object.values(activeTimers).forEach(timer => clearInterval(timer))
+})
 
 const onMatchClick = match => {
   if (!match.is_played) {
