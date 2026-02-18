@@ -164,6 +164,8 @@ class LeagueTableService
     }
 
     /**
+     * Sorts standings by points and tie-breakers, including mini-league head-to-head metrics.
+     *
      * @param  array<TeamStanding>  $standings
      * @return array<TeamStanding>
      */
@@ -172,6 +174,7 @@ class LeagueTableService
         $groups = [];
 
         foreach ($standings as $standing) {
+            // First pass: group teams that are level on points.
             $groups[$standing->points][] = $standing;
         }
 
@@ -189,6 +192,8 @@ class LeagueTableService
             $hasHeadToHeadMatches = collect($groupMetrics)->sum('matches') > 0;
 
             usort($group, function (TeamStanding $a, TeamStanding $b) use ($groupMetrics, $hasHeadToHeadMatches): int {
+                // Comparison tuple order:
+                // 1) points, 2) overall GD, 3) goals scored, 4) head-to-head points, 5) head-to-head GD.
                 $tupleA = [
                     $a->points,
                     $a->goalDifference,
@@ -211,6 +216,7 @@ class LeagueTableService
                     }
                 }
 
+                // Deterministic final fallback to keep ordering stable.
                 return strcmp($a->team->name, $b->team->name);
             });
 
@@ -277,6 +283,7 @@ class LeagueTableService
             $homeTeamId = $result['home_team_id'];
             $awayTeamId = $result['away_team_id'];
 
+            // Only matches where both teams are in the tied group count for mini-league metrics.
             if (! isset($idSet[$homeTeamId], $idSet[$awayTeamId])) {
                 continue;
             }
@@ -287,6 +294,7 @@ class LeagueTableService
             $metrics[$homeTeamId]['matches']++;
             $metrics[$awayTeamId]['matches']++;
 
+            // Track goal difference symmetrically for both sides.
             $metrics[$homeTeamId]['gd'] += ($homeScore - $awayScore);
             $metrics[$awayTeamId]['gd'] += ($awayScore - $homeScore);
 

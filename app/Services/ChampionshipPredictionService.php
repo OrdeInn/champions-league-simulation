@@ -64,6 +64,8 @@ class ChampionshipPredictionService
     }
 
     /**
+     * Runs Monte Carlo simulations and returns championship win counts keyed by team id.
+     *
      * @return array<int, int>
      */
     public function runMonteCarloSimulation(int $iterations): array
@@ -99,9 +101,11 @@ class ChampionshipPredictionService
             ])
             ->all();
 
+        // Reuse real played results and only simulate the unfinished part each iteration.
         for ($i = 0; $i < $iterations; $i++) {
             $simulatedResults = $this->simulateRemainingMatches($remainingMatches);
             $winnerTeamId = $this->calculateFinalStandings($realResults, $simulatedResults);
+            // Each run contributes one title outcome to empirical probabilities.
             $winCounts[$winnerTeamId] = ($winCounts[$winnerTeamId] ?? 0) + 1;
         }
 
@@ -117,6 +121,7 @@ class ChampionshipPredictionService
         $results = [];
 
         foreach ($remainingMatches as $match) {
+            // Reuse the same expected-goals model as real match simulation.
             $homeExpectedGoals = $this->matchSimulationService->calculateExpectedGoals(
                 $match->homeTeam,
                 true,
@@ -132,6 +137,7 @@ class ChampionshipPredictionService
                 'match_id' => (int) $match->id,
                 'home_team_id' => (int) $match->home_team_id,
                 'away_team_id' => (int) $match->away_team_id,
+                // Convert expected goals into concrete simulated scorelines.
                 'home_score' => $this->matchSimulationService->generateGoals($homeExpectedGoals),
                 'away_score' => $this->matchSimulationService->generateGoals($awayExpectedGoals),
             ];
@@ -148,6 +154,7 @@ class ChampionshipPredictionService
     {
         $allResults = $realResults;
 
+        // Build a full-season result set by appending simulated remaining fixtures.
         foreach ($simulatedResults as $simulatedResult) {
             $allResults[] = [
                 'home_team_id' => (int) $simulatedResult['home_team_id'],
@@ -163,6 +170,8 @@ class ChampionshipPredictionService
     }
 
     /**
+     * Rounds probabilities and normalizes the final display list to total exactly 100.0.
+     *
      * @param  Collection<int, Team>  $teams
      * @param  array<int, float>  $probabilitiesByTeamId
      * @return array<TeamPrediction>
@@ -175,6 +184,7 @@ class ChampionshipPredictionService
 
         foreach ($teams as $team) {
             $teamId = (int) $team->id;
+            // Keep output readable with one-decimal precision per team.
             $probability = round((float) ($probabilitiesByTeamId[$teamId] ?? 0.0), 1);
             $rounded[$teamId] = $probability;
 
@@ -188,6 +198,7 @@ class ChampionshipPredictionService
         $difference = round(100.0 - $sum, 1);
 
         if ($highestTeamId !== null && abs($difference) > 0.0) {
+            // Absorb rounding drift into the top team so total remains 100.0%.
             $rounded[$highestTeamId] = round(max(0.0, min(100.0, $rounded[$highestTeamId] + $difference)), 1);
         }
 
@@ -207,6 +218,7 @@ class ChampionshipPredictionService
                 return $b->probability <=> $a->probability;
             }
 
+            // Stable fallback for equal probabilities.
             return strcmp($a->team->name, $b->team->name);
         });
 

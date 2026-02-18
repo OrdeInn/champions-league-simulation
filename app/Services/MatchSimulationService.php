@@ -78,28 +78,40 @@ class MatchSimulationService
         return $match;
     }
 
+    /**
+     * Estimates goals from team attack, opponent defensive weakness, and home-context boosts.
+     * Output is bounded to keep simulated scores in a realistic range.
+     */
     public function calculateExpectedGoals(Team $team, bool $isHome, Team $opponent): float
     {
         $baseRate = 1.5;
+        // Normalize team strength into a multiplier around 1.0.
         $attackStrength = $team->power / 100;
+        // Higher goalkeeper factor reduces opponent scoring expectation.
         $defenseWeakness = 1 - ($opponent->goalkeeper_factor / 20);
 
         $homeBoost = 0.0;
         $supporterBoost = 0.0;
 
         if ($isHome) {
+            // Home and crowd effects are modeled as small additive lifts.
             $homeBoost = ($team->home_advantage / 20) * 0.3;
             $supporterBoost = ($team->supporter_strength / 20) * 0.15;
         }
 
         $expectedGoals = ($baseRate * $attackStrength * (0.5 + ($defenseWeakness * 0.5))) + $homeBoost + $supporterBoost;
 
+        // Clamp to avoid unrealistic extremes and keep simulation stable.
         return max(0.3, min(3.5, $expectedGoals));
     }
 
+    /**
+     * Samples a goal count by walking the cumulative Poisson probabilities (inverse CDF).
+     */
     public function generateGoals(float $expectedGoals): int
     {
         $expectedGoals = max(0.3, $expectedGoals);
+        // Uniform random draw used to pick a bucket in the cumulative distribution.
         $random = mt_rand() / mt_getrandmax();
         $cumulative = 0.0;
 
@@ -111,6 +123,7 @@ class MatchSimulationService
             }
         }
 
+        // Any remaining probability mass is folded into the max modeled bucket.
         return 7;
     }
 
@@ -121,6 +134,9 @@ class MatchSimulationService
         });
     }
 
+    /**
+     * Poisson PMF: P(X = k | lambda).
+     */
     private function poissonProbability(float $lambda, int $k): float
     {
         return exp(-$lambda) * (($lambda ** $k) / $this->factorial($k));
@@ -135,6 +151,7 @@ class MatchSimulationService
         $result = 1;
 
         for ($i = 2; $i <= $number; $i++) {
+            // Iterative factorial keeps this fast and avoids recursion overhead.
             $result *= $i;
         }
 
