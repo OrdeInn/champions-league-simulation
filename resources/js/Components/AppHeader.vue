@@ -1,12 +1,8 @@
 <template>
   <header class="app-header sticky top-0 z-40 border-b border-[var(--border)]/90 bg-[color:rgba(10,14,26,0.9)] backdrop-blur-md">
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
-      <Link href="/" class="group inline-flex items-center gap-3">
-        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--accent-primary)]/40 text-[18px] shadow-[0_0_16px_var(--glow)]" aria-hidden="true">✦</span>
-        <div>
-          <p class="font-display text-xl uppercase tracking-[0.06em] text-[var(--text-primary)]">Champions League Simulator</p>
-          <p class="text-sm text-[var(--text-secondary)]">Stadium Broadcast Center</p>
-        </div>
+      <Link href="/" class="group inline-flex items-center">
+        <p class="font-display text-xl uppercase tracking-[0.06em] text-[var(--text-primary)]">Champions League Simulator</p>
       </Link>
 
       <nav aria-label="Tournament progress">
