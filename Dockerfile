@@ -3,6 +3,7 @@ FROM php:8.3-fpm
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
+    unzip \
     curl \
     libpng-dev \
     libjpeg-dev \
@@ -32,6 +33,13 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set working directory
 WORKDIR /var/www/html
 
+# Avoid "detected dubious ownership" when the repo is bind-mounted from the host
+RUN git config --system --add safe.directory /var/www/html
+
+COPY docker/app/entrypoint.sh /usr/local/bin/app-entrypoint
+RUN chmod +x /usr/local/bin/app-entrypoint
+
 EXPOSE 9000
 
+ENTRYPOINT ["app-entrypoint"]
 CMD ["php-fpm"]
