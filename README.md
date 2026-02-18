@@ -30,8 +30,6 @@ A football league simulation app built with Laravel, Vue.js, and Inertia.js. Sim
 
 - [Docker](https://www.docker.com/get-started) and Docker Compose
 
-That's it. No local PHP, Node, or database installation required.
-
 ### Quick Start
 
 ```bash
