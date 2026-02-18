@@ -32,12 +32,10 @@
 
     <div class="space-y-2.5">
       <template v-for="match in weekMatches" :key="match.id">
-        <button
+        <div
           v-if="match.is_played"
-          type="button"
           :data-testid="`played-match-${match.id}`"
-          class="match-row flex w-full items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--bg-tertiary)]/55 px-3 py-2 text-left hover:shadow-[0_0_16px_var(--glow)]"
-          @click="onMatchClick(match)"
+          class="match-row flex w-full items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--bg-tertiary)]/55 px-3 py-2"
         >
           <span class="min-w-0 flex-1 truncate text-right font-semibold text-[var(--text-primary)]" :title="teamName(match, 'home')">
             {{ teamName(match, 'home') }}
@@ -52,7 +50,31 @@
           <span class="min-w-0 flex-1 truncate font-semibold text-[var(--text-primary)]" :title="teamName(match, 'away')">
             {{ teamName(match, 'away') }}
           </span>
-        </button>
+
+          <button
+            type="button"
+            :data-testid="`edit-match-${match.id}`"
+            class="edit-match-btn"
+            :aria-label="`Edit match result: ${teamName(match, 'home')} vs ${teamName(match, 'away')}`"
+            title="Edit result"
+            @click="onMatchClick(match)"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 20h9" />
+              <path d="m16.5 3.5 4 4L7 21H3v-4z" />
+            </svg>
+          </button>
+        </div>
 
         <div
           v-else
@@ -219,9 +241,51 @@ const onMatchClick = match => {
   cursor: not-allowed;
 }
 
+.edit-match-btn {
+  display: inline-flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.edit-match-btn:hover {
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  background: rgba(0, 229, 255, 0.08);
+  background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+  box-shadow: 0 0 12px var(--glow);
+}
+
+.edit-match-btn:focus-visible {
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  background: rgba(0, 229, 255, 0.08);
+  background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+  box-shadow: 0 0 12px var(--glow);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.edit-match-btn:active {
+  transform: scale(0.95);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .week-nav {
+  .week-nav,
+  .edit-match-btn {
     transition: none;
+  }
+
+  .edit-match-btn:active {
+    transform: none !important;
   }
 }
 </style>

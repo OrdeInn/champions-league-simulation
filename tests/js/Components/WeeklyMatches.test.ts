@@ -76,9 +76,50 @@ describe('WeeklyMatches', () => {
 
   it('emits editMatch when played match clicked', async () => {
     const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
-    await wrapper.get('[data-testid="played-match-1"]').trigger('click')
+    await wrapper.get('[data-testid="edit-match-1"]').trigger('click')
 
     expect(wrapper.emitted('editMatch')).toBeTruthy()
+  })
+
+  it('renders edit button for played matches', () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+
+    expect(wrapper.find('[data-testid="edit-match-1"]').exists()).toBe(true)
+  })
+
+  it('does not render edit button for unplayed matches', () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+
+    expect(wrapper.find('[data-testid="edit-match-2"]').exists()).toBe(false)
+  })
+
+  it('edit button has accessible aria-label', () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+    const editButton = wrapper.get('[data-testid="edit-match-1"]')
+
+    expect(editButton.attributes('aria-label')).toContain('Real Madrid')
+    expect(editButton.attributes('aria-label')).toContain('Liverpool')
+  })
+
+  it('played match row is a div, not a button', () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+
+    expect(wrapper.get('[data-testid="played-match-1"]').element.tagName).toBe('DIV')
+  })
+
+  it('clicking played match row does not emit editMatch', async () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+    await wrapper.get('[data-testid="played-match-1"]').trigger('click')
+
+    expect(wrapper.emitted('editMatch')).toBeUndefined()
+  })
+
+  it('edit button is a focusable button element', () => {
+    const wrapper = mount(WeeklyMatches, { props: { fixtures, selectedWeek: 1 } })
+    const editButton = wrapper.get('[data-testid="edit-match-1"]')
+
+    expect(editButton.element.tagName).toBe('BUTTON')
+    expect(editButton.attributes('type')).toBe('button')
   })
 
   it('disables previous arrow on week 1', () => {
