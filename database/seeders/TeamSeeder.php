@@ -29,7 +29,7 @@ class TeamSeeder extends Seeder
             [
                 'name' => 'Bayern Munich',
                 'short_name' => 'BAY',
-                'power' => 82,
+                'power' => 80,
                 'home_advantage' => 14,
                 'goalkeeper_factor' => 15,
                 'supporter_strength' => 15,
@@ -37,7 +37,7 @@ class TeamSeeder extends Seeder
             [
                 'name' => 'Galatasaray',
                 'short_name' => 'GAL',
-                'power' => 72,
+                'power' => 60,
                 'home_advantage' => 18,
                 'goalkeeper_factor' => 12,
                 'supporter_strength' => 19,
