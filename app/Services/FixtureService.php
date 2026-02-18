@@ -12,9 +12,6 @@ use InvalidArgumentException;
 class FixtureService
 {
     /**
-     * Main entry point: clears existing fixtures, generates and persists all 6 weeks.
-     * Wraps all DB writes in a transaction. Returns created fixtures with matches eager-loaded.
-     *
      * @return Collection<Fixture>
      */
     public function generate(): Collection
@@ -64,7 +61,7 @@ class FixtureService
      * Weeks 4-6 mirror weeks 1-3 with home/away swapped.
      *
      * @param  Collection<Team>  $teams  Must contain exactly 4 teams ordered by id
-     * @return array  Array of 6 weeks, each week is array of [homeTeam, awayTeam] pairs
+     * @return array Array of 6 weeks, each week is array of [homeTeam, awayTeam] pairs
      */
     public function generateRoundRobinPairings(Collection $teams): array
     {
@@ -111,10 +108,6 @@ class FixtureService
         return $weeks;
     }
 
-    /**
-     * Deletes all existing GameMatch and Fixture records (explicitly, not relying on cascade).
-     * GameMatch rows are removed first, then Fixture rows.
-     */
     public function clearExistingFixtures(): void
     {
         GameMatch::query()->delete();

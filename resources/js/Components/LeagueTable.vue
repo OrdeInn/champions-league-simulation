@@ -91,30 +91,3 @@ const goalDiffClass = value => {
 
 const formatGoalDiff = value => (value > 0 ? `+${value}` : `${value}`)
 </script>
-
-<style scoped>
-.table-row-move,
-.table-row-enter-active,
-.table-row-leave-active {
-  transition: transform 300ms ease, opacity 300ms ease;
-}
-
-.table-row-enter-from,
-.table-row-leave-to {
-  opacity: 0;
-  transform: translate3d(0, 8px, 0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .table-row-move,
-  .table-row-enter-active,
-  .table-row-leave-active {
-    transition: opacity 80ms linear;
-  }
-
-  .table-row-enter-from,
-  .table-row-leave-to {
-    transform: none;
-  }
-}
-</style>

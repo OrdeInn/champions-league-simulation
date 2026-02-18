@@ -156,9 +156,3 @@ function handleKeydown(event) {
   }
 }
 </script>
-
-<style scoped>
-.confirm-destructive:hover {
-  box-shadow: 0 0 14px rgba(239, 68, 68, 0.24);
-}
-</style>

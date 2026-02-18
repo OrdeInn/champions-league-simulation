@@ -118,38 +118,3 @@ const submit = () => {
   })
 }
 </script>
-
-<style scoped>
-.score-input::-webkit-inner-spin-button,
-.score-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.score-input {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.stepper-btn {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  height: 2.5rem;
-  width: 2.25rem;
-  font-size: 1.125rem;
-  color: var(--text-muted);
-  transition: background-color 120ms ease, color 120ms ease;
-}
-
-.stepper-btn:hover:not(:disabled) {
-  background-color: var(--bg-secondary);
-  color: var(--accent-primary);
-}
-
-.stepper-btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.3;
-}
-</style>

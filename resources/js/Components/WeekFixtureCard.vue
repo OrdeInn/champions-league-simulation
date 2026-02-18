@@ -32,32 +32,3 @@ defineProps({
   },
 })
 </script>
-
-<style scoped>
-.week-card {
-  opacity: 0;
-  transform: translate3d(0, 14px, 0);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .week-card {
-    animation: week-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    animation-delay: var(--week-delay);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .week-card {
-    opacity: 1;
-    transform: none;
-    animation: none;
-  }
-}
-
-@keyframes week-enter {
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-</style>

@@ -46,15 +46,3 @@ const fillStyle = computed(() => ({
   background: fillColor.value,
 }))
 </script>
-
-<style scoped>
-.probability-fill {
-  transition: width 600ms ease-out;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .probability-fill {
-    transition: width 80ms linear;
-  }
-}
-</style>
