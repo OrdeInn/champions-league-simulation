@@ -33,7 +33,7 @@ describe('SimulationControls', () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
     const wrapper = mount(SimulationControls, { props: baseProps })
     await wrapper.get('[data-testid="reset-button"]').trigger('click')
-    expect(confirmSpy).toHaveBeenCalled()
+    expect(confirmSpy).toHaveBeenCalledWith('This will delete all fixtures and matches. Continue?')
     expect(wrapper.emitted('reset')).toBeTruthy()
   })
 

@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 class MatchSimulationService
 {
-    public function __construct(private readonly ?int $seed = null) {}
+    public function __construct(
+        private readonly FixtureService $fixtureService,
+        private readonly ?int $seed = null
+    ) {}
 
     public function simulateWeek(Fixture $fixture): Fixture
     {
@@ -111,18 +114,10 @@ class MatchSimulationService
         return 7;
     }
 
-    public function resetAllResults(): void
+    public function resetSimulation(): void
     {
         DB::transaction(function (): void {
-            GameMatch::query()->update([
-                'home_score' => null,
-                'away_score' => null,
-                'is_played' => false,
-            ]);
-
-            Fixture::query()->update([
-                'is_played' => false,
-            ]);
+            $this->fixtureService->clearExistingFixtures();
         });
     }
 

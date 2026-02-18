@@ -99,9 +99,9 @@ class SimulationControllerTest extends TestCase
         $this->post(route('simulation.play-all'));
 
         $this->post(route('simulation.reset'))
-            ->assertRedirect(route('simulation.index'));
+            ->assertRedirect(route('teams.index'));
 
-        $this->assertSame(0, GameMatch::query()->where('is_played', true)->count());
-        $this->assertSame(0, Fixture::query()->where('is_played', true)->count());
+        $this->assertSame(0, GameMatch::query()->count());
+        $this->assertSame(0, Fixture::query()->count());
     }
 }

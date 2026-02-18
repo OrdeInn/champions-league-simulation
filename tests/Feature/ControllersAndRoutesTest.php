@@ -206,10 +206,9 @@ class ControllersAndRoutesTest extends TestCase
 
         $response = $this->post(route('simulation.reset'));
 
-        $response->assertRedirect(route('simulation.index'));
-        $this->assertSame(0, Fixture::query()->where('is_played', true)->count());
-        $this->assertSame(0, GameMatch::query()->where('is_played', true)->count());
-        $this->assertSame(12, GameMatch::query()->whereNull('home_score')->whereNull('away_score')->count());
+        $response->assertRedirect(route('teams.index'));
+        $this->assertSame(0, Fixture::query()->count());
+        $this->assertSame(0, GameMatch::query()->count());
     }
 
     public function test_routes_are_named_and_resolve_correctly(): void

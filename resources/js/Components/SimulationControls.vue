@@ -67,7 +67,7 @@ const confirmReset = () => {
     return
   }
 
-  if (window.confirm('Reset all simulation results?')) {
+  if (window.confirm('This will delete all fixtures and matches. Continue?')) {
     emit('reset')
   }
 }

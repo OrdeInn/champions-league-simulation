@@ -71,7 +71,7 @@ class ChampionshipPredictionServiceTest extends TestCase
     {
         $this->createBalancedTeams();
         (new FixtureService())->generate();
-        (new MatchSimulationService(seed: 42))->simulateAllRemainingWeeks();
+        (new MatchSimulationService(new FixtureService(), seed: 42))->simulateAllRemainingWeeks();
 
         $predictions = $this->makeService(iterations: 500)->getPredictions();
 
@@ -281,7 +281,7 @@ class ChampionshipPredictionServiceTest extends TestCase
     {
         return new ChampionshipPredictionService(
             leagueTableService: new LeagueTableService(),
-            matchSimulationService: new MatchSimulationService(),
+            matchSimulationService: new MatchSimulationService(new FixtureService()),
             iterations: $iterations
         );
     }

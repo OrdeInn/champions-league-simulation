@@ -107,8 +107,8 @@ class SimulationController extends Controller
 
     public function reset(): RedirectResponse
     {
-        $this->matchSimulationService->resetAllResults();
+        $this->matchSimulationService->resetSimulation();
 
-        return redirect()->route('simulation.index');
+        return redirect()->route('teams.index');
     }
 }

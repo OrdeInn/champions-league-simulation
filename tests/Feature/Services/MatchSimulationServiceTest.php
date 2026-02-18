@@ -5,6 +5,7 @@ namespace Tests\Feature\Services;
 use App\Models\Fixture;
 use App\Models\GameMatch;
 use App\Models\Team;
+use App\Services\FixtureService;
 use App\Services\MatchSimulationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -32,7 +33,7 @@ class MatchSimulationServiceTest extends TestCase
             'is_played' => false,
         ]);
 
-        $simulatedMatch = (new MatchSimulationService())->simulateMatch($match);
+        $simulatedMatch = (new MatchSimulationService(new FixtureService()))->simulateMatch($match);
 
         $this->assertTrue($simulatedMatch->is_played);
         $this->assertIsInt($simulatedMatch->home_score);
@@ -60,7 +61,7 @@ class MatchSimulationServiceTest extends TestCase
             'is_played' => false,
         ]);
 
-        $updatedFixture = (new MatchSimulationService())->simulateWeek($fixture);
+        $updatedFixture = (new MatchSimulationService(new FixtureService()))->simulateWeek($fixture);
 
         $this->assertTrue($updatedFixture->is_played);
         $this->assertCount(2, $updatedFixture->matches);
@@ -80,7 +81,7 @@ class MatchSimulationServiceTest extends TestCase
             'is_played' => true,
         ]);
 
-        $simulatedFixture = (new MatchSimulationService(seed: 42))->simulateWeek($fixture);
+        $simulatedFixture = (new MatchSimulationService(new FixtureService(), seed: 42))->simulateWeek($fixture);
 
         $reloadedMatch = $match->refresh();
         $this->assertTrue($simulatedFixture->is_played);
@@ -117,7 +118,7 @@ class MatchSimulationServiceTest extends TestCase
             'is_played' => false,
         ]);
 
-        $fixtures = (new MatchSimulationService())->simulateAllRemainingWeeks();
+        $fixtures = (new MatchSimulationService(new FixtureService()))->simulateAllRemainingWeeks();
 
         $this->assertSame([1, 2, 3], $fixtures->pluck('week')->all());
         $this->assertTrue($fixtures->every(fn (Fixture $fixture): bool => $fixture->is_played));
@@ -128,12 +129,12 @@ class MatchSimulationServiceTest extends TestCase
         Fixture::create(['week' => 1, 'is_played' => true]);
         Fixture::create(['week' => 2, 'is_played' => true]);
 
-        $fixtures = (new MatchSimulationService())->simulateAllRemainingWeeks();
+        $fixtures = (new MatchSimulationService(new FixtureService()))->simulateAllRemainingWeeks();
 
         $this->assertTrue($fixtures->isEmpty());
     }
 
-    public function test_reset_all_results_clears_scores_and_flags(): void
+    public function test_reset_simulation_deletes_all_records(): void
     {
         [$teamA, $teamB, $teamC] = $this->createTeams();
         $fixture = Fixture::create(['week' => 1, 'is_played' => true]);
@@ -156,11 +157,10 @@ class MatchSimulationServiceTest extends TestCase
             'is_played' => true,
         ]);
 
-        (new MatchSimulationService())->resetAllResults();
+        (new MatchSimulationService(new FixtureService()))->resetSimulation();
 
-        $this->assertFalse($fixture->refresh()->is_played);
-        $this->assertSame(0, GameMatch::query()->where('is_played', true)->count());
-        $this->assertSame(2, GameMatch::query()->whereNull('home_score')->whereNull('away_score')->count());
+        $this->assertSame(0, Fixture::query()->count());
+        $this->assertSame(0, GameMatch::query()->count());
     }
 
     public function test_stronger_team_wins_more_frequently_over_many_simulations(): void
@@ -191,7 +191,7 @@ class MatchSimulationServiceTest extends TestCase
             'is_played' => false,
         ]);
 
-        $service = new MatchSimulationService(seed: null);
+        $service = new MatchSimulationService(new FixtureService(), seed: null);
         $strongWins = 0;
         $iterations = 3000;
 
@@ -249,7 +249,7 @@ class MatchSimulationServiceTest extends TestCase
             'is_played' => false,
         ]);
 
-        $service = new MatchSimulationService(seed: null);
+        $service = new MatchSimulationService(new FixtureService(), seed: null);
         $homeWins = 0;
         $awayWins = 0;
         $iterations = 1000;
@@ -302,7 +302,7 @@ class MatchSimulationServiceTest extends TestCase
             'supporter_strength' => 12,
         ]);
 
-        $service = new MatchSimulationService();
+        $service = new MatchSimulationService(new FixtureService());
 
         $strongExpectedGoals = $service->calculateExpectedGoals($strongTeam, false, $opponent);
         $weakExpectedGoals = $service->calculateExpectedGoals($weakTeam, false, $opponent);
@@ -312,7 +312,7 @@ class MatchSimulationServiceTest extends TestCase
 
     public function test_generate_goals_never_returns_negative_numbers(): void
     {
-        $service = new MatchSimulationService(seed: 123);
+        $service = new MatchSimulationService(new FixtureService(), seed: 123);
 
         for ($i = 0; $i < 250; $i++) {
             $goals = $service->generateGoals(1.7);
@@ -322,7 +322,7 @@ class MatchSimulationServiceTest extends TestCase
 
     public function test_generate_goals_is_capped_at_seven(): void
     {
-        $service = new MatchSimulationService(seed: 321);
+        $service = new MatchSimulationService(new FixtureService(), seed: 321);
 
         for ($i = 0; $i < 500; $i++) {
             $goals = $service->generateGoals(10.0);
@@ -341,7 +341,7 @@ class MatchSimulationServiceTest extends TestCase
             'is_played' => false,
         ]);
 
-        $service = new MatchSimulationService(seed: 42);
+        $service = new MatchSimulationService(new FixtureService(), seed: 42);
         $firstResult = $service->simulateMatch($match);
 
         $homeScore = $firstResult->home_score;
@@ -380,7 +380,7 @@ class MatchSimulationServiceTest extends TestCase
             'is_played' => false,
         ]);
 
-        $simulated = (new MatchSimulationService())->simulateWeek($fixture)->refresh()->load('matches');
+        $simulated = (new MatchSimulationService(new FixtureService()))->simulateWeek($fixture)->refresh()->load('matches');
         $keptMatch = $simulated->matches->firstWhere('home_team_id', $teamA->id);
 
         $this->assertSame(1, $keptMatch->home_score);

@@ -117,7 +117,6 @@ const resetAll = () => {
   isResetting.value = true
 
   router.post(route('simulation.reset'), {}, {
-    preserveScroll: true,
     onFinish: () => {
       isResetting.value = false
     },

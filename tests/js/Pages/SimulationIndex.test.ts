@@ -85,9 +85,9 @@ describe('Simulation/Index', () => {
     const wrapper = mount(SimulationIndex, { props: baseProps, global: { stubs } })
     await wrapper.get('[data-testid="emit-reset"]').trigger('click')
     expect(postMock).toHaveBeenCalledWith('/simulation.reset', {}, expect.objectContaining({
-      preserveScroll: true,
       onFinish: expect.any(Function),
     }))
+    expect(postMock.mock.calls[0][2]).not.toHaveProperty('preserveScroll')
   })
 
   it('opens editor when weekly matches emits editMatch', async () => {

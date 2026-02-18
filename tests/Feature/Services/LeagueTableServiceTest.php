@@ -302,7 +302,7 @@ class LeagueTableServiceTest extends TestCase
         $this->createTeam('Liverpool', 'LIV', 85);
 
         (new FixtureService())->generate();
-        (new MatchSimulationService())->simulateAllRemainingWeeks();
+        (new MatchSimulationService(new FixtureService()))->simulateAllRemainingWeeks();
 
         $table = (new LeagueTableService())->getTable();
 

@@ -5,6 +5,7 @@ namespace Tests\Unit\Services;
 use App\Models\Fixture;
 use App\Models\GameMatch;
 use App\Models\Team;
+use App\Services\FixtureService;
 use App\Services\MatchSimulationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,7 +19,7 @@ class MatchSimulationServiceTest extends TestCase
         [$a, $b] = Team::factory()->count(2)->create();
         $match = GameMatch::factory()->create(['home_team_id' => $a->id, 'away_team_id' => $b->id]);
 
-        $simulated = (new MatchSimulationService())->simulateMatch($match);
+        $simulated = (new MatchSimulationService(new FixtureService()))->simulateMatch($match);
 
         $this->assertTrue($simulated->is_played);
         $this->assertGreaterThanOrEqual(0, $simulated->home_score);
@@ -34,7 +35,7 @@ class MatchSimulationServiceTest extends TestCase
         GameMatch::factory()->create(['fixture_id' => $fixture->id, 'home_team_id' => $a->id, 'away_team_id' => $b->id]);
         GameMatch::factory()->create(['fixture_id' => $fixture->id, 'home_team_id' => $c->id, 'away_team_id' => $d->id]);
 
-        $service = new MatchSimulationService();
+        $service = new MatchSimulationService(new FixtureService());
         $service->simulateWeek($fixture);
         $this->assertTrue($fixture->refresh()->is_played);
 
@@ -60,7 +61,7 @@ class MatchSimulationServiceTest extends TestCase
         $fixture = Fixture::factory()->create();
         $match = GameMatch::factory()->create(['fixture_id' => $fixture->id, 'home_team_id' => $strong->id, 'away_team_id' => $weak->id]);
 
-        $service = new MatchSimulationService();
+        $service = new MatchSimulationService(new FixtureService());
         $strongWins = 0;
         $homeWins = 0;
         $awayWins = 0;
@@ -113,7 +114,7 @@ class MatchSimulationServiceTest extends TestCase
         GameMatch::factory()->create(['fixture_id' => $fixture2->id, 'home_team_id' => $a->id, 'away_team_id' => $c->id]);
         GameMatch::factory()->create(['fixture_id' => $fixture2->id, 'home_team_id' => $b->id, 'away_team_id' => $d->id]);
 
-        $service = new MatchSimulationService();
+        $service = new MatchSimulationService(new FixtureService());
         $this->assertGreaterThan(
             $service->calculateExpectedGoals($b, false, $a),
             $service->calculateExpectedGoals($a, false, $b)
@@ -127,7 +128,7 @@ class MatchSimulationServiceTest extends TestCase
         $service->simulateAllRemainingWeeks();
         $this->assertSame(2, Fixture::query()->where('is_played', true)->count());
 
-        $service->resetAllResults();
+        $service->resetSimulation();
         $this->assertSame(0, Fixture::query()->where('is_played', true)->count());
         $this->assertSame(0, GameMatch::query()->where('is_played', true)->count());
     }

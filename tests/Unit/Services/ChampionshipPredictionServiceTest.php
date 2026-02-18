@@ -78,7 +78,7 @@ class ChampionshipPredictionServiceTest extends TestCase
         $leaderPrediction = $this->findByTeamId($this->service(500)->getPredictions() ?? [], $teams[0]->id);
         $this->assertGreaterThanOrEqual(95.0, $leaderPrediction->probability);
 
-        (new MatchSimulationService(seed: 42))->simulateAllRemainingWeeks();
+        (new MatchSimulationService(new FixtureService(), seed: 42))->simulateAllRemainingWeeks();
         $final = $this->service(300)->getPredictions();
         $this->assertSame(100.0, $final[0]->probability);
     }
@@ -97,7 +97,7 @@ class ChampionshipPredictionServiceTest extends TestCase
 
     private function service(int $iterations): ChampionshipPredictionService
     {
-        return new ChampionshipPredictionService(new LeagueTableService(), new MatchSimulationService(), $iterations);
+        return new ChampionshipPredictionService(new LeagueTableService(), new MatchSimulationService(new FixtureService()), $iterations);
     }
 
     private function markPlayedWeeks(int $week): void
