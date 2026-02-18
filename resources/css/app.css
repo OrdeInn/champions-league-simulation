@@ -107,6 +107,13 @@ body {
     box-shadow: 0 1px 0 rgba(30, 41, 59, 0.8), 0 6px 22px rgba(0, 0, 0, 0.28), 0 0 22px var(--glow);
 }
 
+.nav-link-disabled {
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.5;
+    user-select: none;
+}
+
 .font-display {
     font-family: var(--font-display);
 }

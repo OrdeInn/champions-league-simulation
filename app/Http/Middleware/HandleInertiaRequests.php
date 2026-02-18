@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Fixture;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -35,9 +37,14 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $hasFixtures = Fixture::query()->exists();
+
         return [
             ...parent::share($request),
-            //
+            'navigation' => Inertia::always([
+                'fixturesAvailable' => $hasFixtures,
+                'simulationAvailable' => $hasFixtures,
+            ]),
         ];
     }
 }

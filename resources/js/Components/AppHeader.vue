@@ -12,7 +12,17 @@
       <nav aria-label="Tournament progress">
         <ol class="flex flex-wrap items-center gap-2 text-sm">
           <li v-for="step in steps" :key="step.label" class="flex items-center gap-2">
+            <span
+              v-if="step.disabled"
+              class="nav-link-disabled rounded-md px-2 py-1 font-semibold"
+              role="link"
+              aria-disabled="true"
+              :title="step.tooltip"
+            >
+              {{ step.label }}
+            </span>
             <Link
+              v-else
               :href="step.href"
               :aria-current="step.isActive ? 'page' : undefined"
               class="rounded-md px-2 py-1 font-semibold transition-colors"
@@ -36,11 +46,14 @@ const page = usePage()
 
 const steps = computed(() => {
   const url = page.url || '/'
+  const navigation = page.props?.navigation
+  const fixturesAvailable = navigation?.fixturesAvailable === true
+  const simulationAvailable = navigation?.simulationAvailable === true
 
   return [
-    { label: 'Teams', href: '/', isActive: url === '/' || url.startsWith('/?') },
-    { label: 'Fixtures', href: '/fixtures', isActive: url.startsWith('/fixtures') },
-    { label: 'Simulation', href: '/simulation', isActive: url.startsWith('/simulation') },
+    { label: 'Teams', href: '/', isActive: url === '/' || url.startsWith('/?'), disabled: false, tooltip: null },
+    { label: 'Fixtures', href: '/fixtures', isActive: url.startsWith('/fixtures'), disabled: !fixturesAvailable, tooltip: 'Generate fixtures first' },
+    { label: 'Simulation', href: '/simulation', isActive: url.startsWith('/simulation'), disabled: !simulationAvailable, tooltip: 'Generate fixtures first' },
   ]
 })
 </script>

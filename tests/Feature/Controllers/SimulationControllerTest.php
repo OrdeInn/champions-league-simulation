@@ -28,6 +28,8 @@ class SimulationControllerTest extends TestCase
                 ->has('currentWeek')
                 ->has('predictions')
                 ->has('allWeeksPlayed')
+                ->where('navigation.fixturesAvailable', true)
+                ->where('navigation.simulationAvailable', true)
             );
     }
 

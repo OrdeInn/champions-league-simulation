@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Controllers;
 
+use App\Models\Fixture;
 use App\Models\Team;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -46,6 +47,31 @@ class TeamControllerTest extends TestCase
         $this->get(route('teams.index'))
             ->assertInertia(fn (Assert $page): Assert => $page
                 ->where('teams.0.power', 90)
+            );
+    }
+
+    public function test_navigation_flags_are_false_when_no_fixtures_exist(): void
+    {
+        Team::factory()->count(4)->create();
+
+        $this->get(route('teams.index'))
+            ->assertInertia(fn (Assert $page): Assert => $page
+                ->where('navigation.fixturesAvailable', false)
+                ->where('navigation.simulationAvailable', false)
+            );
+    }
+
+    public function test_navigation_flags_are_true_when_fixtures_exist(): void
+    {
+        Team::factory()->count(4)->create();
+        $this->post(route('fixtures.generate'));
+
+        $this->assertTrue(Fixture::query()->exists());
+
+        $this->get(route('teams.index'))
+            ->assertInertia(fn (Assert $page): Assert => $page
+                ->where('navigation.fixturesAvailable', true)
+                ->where('navigation.simulationAvailable', true)
             );
     }
 }

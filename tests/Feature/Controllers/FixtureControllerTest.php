@@ -32,6 +32,8 @@ class FixtureControllerTest extends TestCase
             ->assertInertia(fn (Assert $page): Assert => $page
                 ->component('Fixtures/Index', false)
                 ->has('fixtures', 6)
+                ->where('navigation.fixturesAvailable', true)
+                ->where('navigation.simulationAvailable', true)
             );
     }
 
