@@ -114,9 +114,6 @@ const emit = defineEmits(['update:selectedWeek', 'editMatch'])
 
 const animatedScores = reactive({})
 const activeTimers = Object.create(null)
-const prefersReducedMotion = typeof window !== 'undefined'
-  && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
 const maxWeek = computed(() => props.fixtures.length || 6)
 
 const selectedFixture = computed(() => {
@@ -139,41 +136,9 @@ const scoreKey = (matchId, side) => `${matchId}-${side}`
 
 const animateScoreTo = (key, target) => {
   const safeTarget = Math.max(0, Number(target) || 0)
-  const current = Number(animatedScores[key] || 0)
-
-  if (current === safeTarget) {
-    return
-  }
-
-  if (prefersReducedMotion) {
-    animatedScores[key] = safeTarget
-    return
-  }
-
   clearInterval(activeTimers[key])
-  animatedScores[key] = 0
-
-  if (safeTarget === 0) {
-    return
-  }
-
-  const duration = 260
-  const tick = 16
-  const steps = Math.max(1, Math.ceil(duration / tick))
-  let currentStep = 0
-
-  const timer = setInterval(() => {
-    currentStep += 1
-    animatedScores[key] = Math.min(safeTarget, Math.round((safeTarget * currentStep) / steps))
-
-    if (currentStep >= steps) {
-      animatedScores[key] = safeTarget
-      clearInterval(timer)
-      delete activeTimers[key]
-    }
-  }, tick)
-
-  activeTimers[key] = timer
+  delete activeTimers[key]
+  animatedScores[key] = safeTarget
 }
 
 watch(

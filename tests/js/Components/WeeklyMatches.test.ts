@@ -1,5 +1,4 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import WeeklyMatches from '../../../resources/js/Components/WeeklyMatches.vue'
 
@@ -144,7 +143,8 @@ describe('WeeklyMatches', () => {
     expect(wrapper.get('[data-testid="played-match-3"]').text()).toContain('0')
   })
 
-  it('animates when fixtures update for the current week', async () => {
+  it('updates scores instantly when fixtures update for the current week', async () => {
+    const setIntervalSpy = vi.spyOn(globalThis, 'setInterval')
     const wrapper = mount(WeeklyMatches, { props: { fixtures: playedWeekFixtures, selectedWeek: 1 } })
 
     await wrapper.setProps({
@@ -159,18 +159,14 @@ describe('WeeklyMatches', () => {
       ],
     })
 
-    expect(wrapper.get('[data-testid="played-match-1"]').text()).toContain('0')
-    vi.advanceTimersByTime(300)
-    await nextTick()
-
     const text = wrapper.get('[data-testid="played-match-1"]').text()
     expect(text).toContain('4')
     expect(text).toContain('2')
+    expect(setIntervalSpy).not.toHaveBeenCalled()
   })
 
-  it('clears existing timers before starting new ones for rapid fixture updates', async () => {
+  it('does not create timers for rapid fixture updates', async () => {
     const setIntervalSpy = vi.spyOn(globalThis, 'setInterval')
-    const clearIntervalSpy = vi.spyOn(globalThis, 'clearInterval')
     const wrapper = mount(WeeklyMatches, { props: { fixtures: playedWeekFixtures, selectedWeek: 1 } })
 
     await wrapper.setProps({
@@ -185,9 +181,6 @@ describe('WeeklyMatches', () => {
       ],
     })
 
-    const firstHomeTimer = setIntervalSpy.mock.results[0]?.value
-    const firstAwayTimer = setIntervalSpy.mock.results[1]?.value
-
     await wrapper.setProps({
       fixtures: [
         {
@@ -200,13 +193,11 @@ describe('WeeklyMatches', () => {
       ],
     })
 
-    expect(clearIntervalSpy).toHaveBeenCalledWith(firstHomeTimer)
-    expect(clearIntervalSpy).toHaveBeenCalledWith(firstAwayTimer)
+    expect(setIntervalSpy).not.toHaveBeenCalled()
   })
 
-  it('clears active timers on unmount', async () => {
+  it('unmounts cleanly without active timers', async () => {
     const setIntervalSpy = vi.spyOn(globalThis, 'setInterval')
-    const clearIntervalSpy = vi.spyOn(globalThis, 'clearInterval')
     const wrapper = mount(WeeklyMatches, { props: { fixtures: playedWeekFixtures, selectedWeek: 1 } })
 
     await wrapper.setProps({
@@ -221,12 +212,8 @@ describe('WeeklyMatches', () => {
       ],
     })
 
-    const homeTimer = setIntervalSpy.mock.results[0]?.value
-    const awayTimer = setIntervalSpy.mock.results[1]?.value
-
     wrapper.unmount()
 
-    expect(clearIntervalSpy).toHaveBeenCalledWith(homeTimer)
-    expect(clearIntervalSpy).toHaveBeenCalledWith(awayTimer)
+    expect(setIntervalSpy).not.toHaveBeenCalled()
   })
 })
